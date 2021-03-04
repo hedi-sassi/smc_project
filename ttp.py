@@ -43,7 +43,7 @@ class TrustedParamGenerator:
         """
         Retrieve a triplet of shares for a given client_id. And operation id.
         """
-
+        print("################################3Beaver dict : "+str(self.triplets_shares))
         if client_id not in self.participant_ids:
             return None
 

@@ -126,6 +126,7 @@ def test_suite3():
     }
 
     expr = ((alice_secret + bob_secret + charlie_secret) * Scalar(5))
+    print("##################################",repr(expr))
     expected = (3 + 14 + 2) * 5
     suite(parties, expr, expected)
 

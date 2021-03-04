@@ -79,7 +79,7 @@ def mul_mod(a, b) -> int:
     return (a * b) % get_mod()
 
 # size of the additive integer field
-max_nbr = 20
+max_nbr = 2**64
 
 def get_mod() -> int:
     """Return the moddulus for the integer Field 2^64"""

@@ -84,7 +84,7 @@ class SMCParty:
         self.comm.publish_message("final", str(final_share))
 
         # put every share of the circuit together
-        final_result = final_share
+        final_result = Share(final_share)
 
         for pid in self.protocol_spec.participant_ids:
 
@@ -95,10 +95,10 @@ class SMCParty:
 
                     remote_share = self.comm.retrieve_public_message(pid, "final")
                 #print("#######################################"+str(int(remote_share)))
-                final_result += int(remote_share)
+                final_result += Share(int(remote_share))
 
         #print("#######################################"+str(final_result))
-        return final_result
+        return final_result.value
 
 
     # Suggestion: To process expressions, make use of the *visitor pattern* like so:
@@ -116,7 +116,27 @@ class SMCParty:
 
         if isinstance(expr, Multiplication):
 
-            return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True) #Need to use beaver triplets !
+            if isinstance(expr.e1, Secret) and isinstance(expr.e2, Secret):
+                x = self.process_expression(expr.e1, True)
+                y = self.process_expression(expr.e2, True)
+
+                x_minus_a, y_minus_b, c = self.get_beaver_shares(x, y, expr)
+
+                if self.client_id == self.protocol_spec.participant_ids[0]:     #participant 0 add the constant
+                    return  c + x * y_minus_b + y * x_minus_a - x_minus_a * y_minus_b
+                else:
+                    return  c + x * y_minus_b + y * x_minus_a
+
+            elif isinstance(expr.e1, Scalar) and isinstance(expr.e1, Scalar):
+
+                if self.client_id == self.protocol_spec.participant_ids[0]: # only the first participant operates on scalars
+                    return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True)
+
+                else:   #others participants need to perform neutral operation * 1 or + 0 depending if mult or add
+                    return Share(1) if mult else Share(0)
+                
+            else:
+                return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True)
 
         if isinstance(expr, Secret):
             if str(expr.get_id_int()) in self.own_shares.keys():
@@ -125,15 +145,15 @@ class SMCParty:
                 return Share(self.search_share(expr.get_id_int()))
 
         if isinstance(expr, Scalar):    # scalar should only be added by one participant in case of addition
-            if not mult and self.protocol_spec.participant_ids[0] != self.client_id :
-                
+            if not mult and self.protocol_spec.participant_ids[0] != self.client_id:
                 return Share(0)
-            return Share(expr.value)
+            else:
+                return Share(expr.value)
         #
         # Call specialized methods for each expression type, and have these specialized
         # methods in turn call `process_expression` on their sub-expressions to process
         # further.
-        pass
+
 
     def search_share(self, expr_id) -> int:
         """Search for corresponding secret on the server"""
@@ -145,3 +165,38 @@ class SMCParty:
                 if res is not None:
                     return int(res)
         return None
+
+
+    def get_beaver_shares(self, x, y, expr) :
+        print(str(expr.get_id_int()))
+        a, b, c = self.comm.retrieve_beaver_triplet_shares(str(expr.get_id_int()))
+
+        #send to others shares of x-a and y-b
+        x_minus_a_share = x - Share(a)
+        y_minus_b_share = y - Share(b)
+
+        self.comm.publish_message(self.client_id+"x_minus_a", str(x_minus_a_share.value))
+        self.comm.publish_message(self.client_id+"y_minus_b", str(y_minus_b_share.value))
+
+        #reconstruct x -a and y-b 
+
+        x_shares = x_minus_a_share
+        y_shares = y_minus_b_share
+
+        for pid in self.protocol_spec.participant_ids:
+
+            if pid != self.client_id:
+
+                curr_x = self.comm.retrieve_public_message(pid, pid+"x_minus_a")
+                curr_y = self.comm.retrieve_public_message(pid, pid+"y_minus_b")
+
+                while curr_x is None:               #wait for others to upload their shares
+                    curr_x = self.comm.retrieve_public_message(pid, pid+"x_minus_a")
+
+                while curr_y is None:
+                    curr_y = self.comm.retrieve_public_message(pid, pid+"y_minus_b")
+
+                x_shares += Share(int(curr_x))
+                y_shares += Share(int(curr_y))
+
+        return x_shares, y_shares, Share(c)

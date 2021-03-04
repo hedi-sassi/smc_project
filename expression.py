@@ -72,7 +72,8 @@ class Expression:
     def __hash__(self):
         return hash(self.id)
 
-    # Feel free to add as many methods as you like.
+    def get_id_int(self):
+        return int.from_bytes(base64.b64decode(self.id), byteorder='big', signed=False)
 
 
 class Scalar(Expression):
@@ -113,8 +114,6 @@ class Secret(Expression):
             f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
         )
 
-    def get_id_int(self):
-        return int.from_bytes(base64.b64decode(self.id), byteorder='big', signed=False)
 
     # Feel free to add as many methods as you like.
 
