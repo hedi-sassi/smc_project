@@ -49,7 +49,12 @@ def share_secret(secret: int, num_shares: int) -> List[Share]:
 
 def reconstruct_secret(shares: List[Share]) -> int:
     """Reconstruct the secret from shares."""
-    raise NotImplementedError("You need to implement this method.")
+    
+    res = 0
+
+    for i in range(shares.count):
+        res += shares[i]
+
+    return res
 
 
-# Feel free to add as many methods as you want.
