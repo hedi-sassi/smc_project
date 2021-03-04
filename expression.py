@@ -22,7 +22,7 @@ def gen_id() -> bytes:
     )
     return base64.b64encode(id_bytes)
 
-def operation_formatting(op, depth = 0) -> str:
+def operation_formatting(op: Expression, depth: int = 0) -> str:
 
     f1 = f"{repr(op.e1)}" if isinstance(op.e1, (Scalar, Secret)) else f"{operation_formatting(op.e1, depth+1)}"
     f2 = f"{repr(op.e2)}" if isinstance(op.e2, (Scalar, Secret)) else f"{operation_formatting(op.e2, depth+1)}"
