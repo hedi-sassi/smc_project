@@ -22,18 +22,19 @@ def gen_id() -> bytes:
     )
     return base64.b64encode(id_bytes)
 
-def operation_formatting(op: Expression, depth: int = 0) -> str:
 
-    f1 = f"{repr(op.e1)}" if isinstance(op.e1, (Scalar, Secret)) else f"{operation_formatting(op.e1, depth+1)}"
-    f2 = f"{repr(op.e2)}" if isinstance(op.e2, (Scalar, Secret)) else f"{operation_formatting(op.e2, depth+1)}"
+def operation_formatting(op, depth: int = 0) -> str:
+    f1 = f"{repr(op.e1)}" if isinstance(op.e1, (Scalar, Secret)) else f"{operation_formatting(op.e1, depth + 1)}"
+    f2 = f"{repr(op.e2)}" if isinstance(op.e2, (Scalar, Secret)) else f"{operation_formatting(op.e2, depth + 1)}"
 
-    if  ((not isinstance(op.e1, (Scalar, Secret))) or (not isinstance(op.e2, (Scalar, Secret)))) and (op.e1.grouped and op.e2.grouped):
+    if (not isinstance(op.e1, (Scalar, Secret)) or not isinstance(op.e2, (Scalar, Secret))) and (
+            op.e1.grouped and op.e2.grouped):
         op.grouped = True
     else:
 
         if not isinstance(op.e1, (Scalar, Secret)) and not op.e1.grouped:
             op.grouped = True
-            f1 = f"({f1})"        
+            f1 = f"({f1})"
 
         if not isinstance(op.e2, (Scalar, Secret)) and not op.e2.grouped:
             op.grouped = True
@@ -53,7 +54,7 @@ class Expression:
     def __init__(
             self,
             id: Optional[bytes] = None
-        ):
+    ):
         # If ID is not given, then generate one.
         if id is None:
             id = gen_id()
@@ -62,14 +63,11 @@ class Expression:
     def __add__(self, other):
         return Addition(self, other)
 
-
     def __sub__(self, other):
         return Substraction(self, other)
 
-
     def __mul__(self, other):
         return Multiplication(self, other)
-
 
     def __hash__(self):
         return hash(self.id)
@@ -84,19 +82,16 @@ class Scalar(Expression):
             self,
             value: int,
             id: Optional[bytes] = None
-        ):
+    ):
         self.grouped = True
         self.value = value
         super().__init__(id)
 
-
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self.value)})"
 
-
     def __hash__(self):
         return
-
 
     # Feel free to add as many methods as you like.
 
@@ -108,17 +103,18 @@ class Secret(Expression):
             self,
             value: Optional[int] = None,
             id: Optional[bytes] = None
-        ):
+    ):
         self.grouped = True
         self.value = value
         super().__init__(id)
-
 
     def __repr__(self):
         return (
             f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
         )
 
+    def get_id_int(self):
+        return int.from_bytes(base64.b64decode(self.id), byteorder='big', signed=False)
 
     # Feel free to add as many methods as you like.
 
@@ -138,7 +134,6 @@ class Addition(Expression):
         super().__init__(id)
 
     def __repr__(self):
-
         return (
             f"{operation_formatting(self)}"
         )
