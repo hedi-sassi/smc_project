@@ -69,8 +69,12 @@ class SMCParty:
             self,
             expr: Expression
         ) -> Share:
-        # if expr is an addition operation:
-        #     ...
+
+
+        if isinstance(expr, Addition): # if expr is an addition operation:
+
+            # additively share if the current client as its value in the current addition
+       
 
         # if expr is a multiplication operation:
         #     ...
