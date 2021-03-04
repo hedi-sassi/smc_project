@@ -54,7 +54,6 @@ class TrustedParamGenerator:
         else:
             # generate the dict corresponding to this new operation and return result
             self.gen_beaver(op_id)
-            print(self.triplets_shares)
             return self.triplets_shares[op_id][client_id]
 
  
@@ -65,8 +64,6 @@ class TrustedParamGenerator:
         b = random.randint(0, get_mod())
 
         c = mul_mod(a, b)
-        print(str(a)+" <-a "+str(b)+" <-b "+str(c)+" <-c ")
-        print(len(self.participant_ids))
 
         # generate shares of beaver triplets
         a_shares = share_secret(a, len(self.participant_ids))
@@ -83,7 +80,7 @@ class TrustedParamGenerator:
             l.append(a_shares[i])
             l.append(b_shares[i])
             l.append(c_shares[i])
-            
+
             res[name] = tuple(l)
 
         # index dict w.r.t the operation id
