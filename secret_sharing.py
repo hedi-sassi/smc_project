@@ -1,7 +1,8 @@
 """
 Secret sharing scheme.
 """
-
+import random
+import sys 
 from typing import List
 
 
@@ -30,8 +31,21 @@ class Share:
 
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
-    raise NotImplementedError("You need to implement this method.")
+    
+    shares = []
+    last_share = secret
+    for _ in range(num_shares -1):
 
+        share = random.randint(-sys.maxsize, sys.maxsize)
+
+        shares.append(share)
+        last_share -= share
+
+    shares.append(last_share)
+
+    return shares
+
+    
 
 def reconstruct_secret(shares: List[Share]) -> int:
     """Reconstruct the secret from shares."""
