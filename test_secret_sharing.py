@@ -18,3 +18,19 @@ def test():
     recovered_value = reconstruct_secret(shares)
 
     assert recovered_value == test_value
+
+    nbr_participants = 3
+
+    shares = share_secret(test_value, nbr_participants)
+
+    recovered_value = reconstruct_secret(shares)
+
+    assert recovered_value == test_value
+
+    nbr_participants = 2
+
+    shares = share_secret(test_value, nbr_participants)
+
+    recovered_value = reconstruct_secret(shares)
+
+    assert recovered_value == test_value

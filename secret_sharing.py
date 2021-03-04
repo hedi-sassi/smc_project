@@ -22,15 +22,15 @@ class Share:
         return f"{self.__class__.__name__}({self.value})"
 
     def __add__(self, other):
-        val = self.value + other.value
+        val = add_mod(self.value, other.value)
         return Share(val)
 
     def __sub__(self, other):
-        val = self.value - other.value
+        val = sub_mod(self.value, other.value)
         return Share(val)
 
     def __mul__(self, other):
-        val = self.value * other.value
+        val = mul_mod(self.value, other.value)
         return Share(val)
 
 
@@ -41,10 +41,10 @@ def share_secret(secret: int, num_shares: int) -> List[Share]:
     last_share_value = secret
     for _ in range(num_shares -1):
 
-        share_value = random.randint(-sys.maxsize, sys.maxsize)
+        share_value = random.randint(0, get_mod())
 
         shares.append(Share(share_value))
-        last_share_value -= share_value
+        last_share_value = sub_mod(last_share_value, share_value)
 
     shares.append(Share(last_share_value))
 
@@ -57,9 +57,31 @@ def reconstruct_secret(shares: List[Share]) -> int:
     
     res = 0
 
-    for i in range(len(shares)):
-        res += shares[i].value
+    for share in shares :
+        res = add_mod(share.value, res)
 
     return res
 
 
+def add_mod(a, b) -> int:
+    """Add modulo 2^64"""
+
+    return (a + b) % get_mod()
+
+def sub_mod(a, b) -> int:
+    """Sub modulo 2^64"""
+
+    return (a - b) % get_mod()
+
+def mul_mod(a, b) -> int:
+    """Mul modulo 2^64"""
+
+    return (a * b) % get_mod()
+
+# size of the additive integer field
+max_nbr = 2**64
+
+def get_mod() -> int:
+    """Return the moddulus for the integer Field 2^64"""
+
+    return max_nbr

@@ -29,4 +29,4 @@ def test():
     b = reconstruct_secret(list({alice_shares[1], bob_shares[1], charlie_shares[1]}))
     c = reconstruct_secret(list({alice_shares[2], bob_shares[2], charlie_shares[2]}))
 
-    assert a * b == c
+    assert mul_mod(a, b) == c
