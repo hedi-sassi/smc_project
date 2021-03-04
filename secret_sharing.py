@@ -52,7 +52,7 @@ def reconstruct_secret(shares: List[Share]) -> int:
     
     res = 0
 
-    for i in range(shares.count):
+    for i in range(len(shares)):
         res += shares[i]
 
     return res
