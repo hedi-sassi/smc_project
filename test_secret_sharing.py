@@ -5,6 +5,32 @@ Testing secret sharing is not obligatory.
 MODIFY THIS FILE.
 """
 
+from secret_sharing import share_secret, reconstruct_secret
+
 
 def test():
-    raise NotImplementedError("You can create some tests.")
+    
+    test_value = 15
+    nbr_participants = 10
+
+    shares = share_secret(test_value, nbr_participants)
+
+    recovered_value = reconstruct_secret(shares)
+
+    assert recovered_value == test_value
+
+    nbr_participants = 3
+
+    shares = share_secret(test_value, nbr_participants)
+
+    recovered_value = reconstruct_secret(shares)
+
+    assert recovered_value == test_value
+
+    nbr_participants = 2
+
+    shares = share_secret(test_value, nbr_participants)
+
+    recovered_value = reconstruct_secret(shares)
+
+    assert recovered_value == test_value
