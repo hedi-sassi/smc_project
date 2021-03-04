@@ -11,37 +11,42 @@ class Share:
     A secret share in a finite field.
     """
 
-    def __init__(self, *args, **kwargs):
-        # Adapt constructor arguments as you wish
-        raise NotImplementedError("You need to implement this method.")
+    def __init__(
+        self,
+        value: int = 0
+        ):
+
+        self.value = value
 
     def __repr__(self):
-        # Helps with debugging.
-        raise NotImplementedError("You need to implement this method.")
+        return f"{self.__class__.__name__}({self.value})"
 
     def __add__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        val = self.value + other.value
+        return Share(val)
 
     def __sub__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        val = self.value - other.value
+        return Share(val)
 
     def __mul__(self, other):
-        raise NotImplementedError("You need to implement this method.")
+        val = self.value * other.value
+        return Share(val)
 
 
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
     
     shares = []
-    last_share = secret
+    last_share_value = secret
     for _ in range(num_shares -1):
 
-        share = random.randint(-sys.maxsize, sys.maxsize)
+        share_value = random.randint(-sys.maxsize, sys.maxsize)
 
-        shares.append(share)
-        last_share -= share
+        shares.append(Share(share_value))
+        last_share_value -= share_value
 
-    shares.append(last_share)
+    shares.append(Share(last_share_value))
 
     return shares
 
@@ -53,7 +58,7 @@ def reconstruct_secret(shares: List[Share]) -> int:
     res = 0
 
     for i in range(len(shares)):
-        res += shares[i]
+        res += shares[i].value
 
     return res
 
