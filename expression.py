@@ -28,7 +28,6 @@ def operation_formatting(op, depth: int = 0) -> str:
     res = ""
 
     if not isinstance(op, (Scalar, Secret)):
-        print(type(op.e1), op.op, type(op.e2))
 
         if isinstance(op, Multiplication):
             if isinstance(op.e1, (Scalar, Secret, Multiplication)) and isinstance(op.e2, (Scalar, Secret, Multiplication)):

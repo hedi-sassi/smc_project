@@ -74,7 +74,7 @@ def suite(parties, expr, expected):
         assert result == expected
 
 
-'''def test_suite1():
+def test_suite1():
     """
     f(a, b, c) = a + b + c
     """
@@ -210,7 +210,6 @@ def test_suite7():
     expected = ((3 * 14) + (14 * 2) + (2 * 3))
     suite(parties, expr, expected)
 
-'''
 
 def test_suite8():
     """
@@ -240,7 +239,7 @@ def test_suite8():
     suite(parties, expr, expected)
 
 
-'''def test_suite_constantes():
+def test_suite_constantes():
     """
     f(a, b) = K1 + K2
     """
@@ -310,7 +309,7 @@ def test_suite_const_mul_secret():
 
 def test_suite_const_mul_secret2():
     """
-        f(a, b) = a * K * b
+        f(a, b) = K * K * a
     """
     alice_secret = Secret()
     bob_secret = Secret()
@@ -320,7 +319,6 @@ def test_suite_const_mul_secret2():
         "Bob": {bob_secret: 4},
     }
 
-    expr = (alice_secret * Scalar(2) * bob_secret)
-    expected = (3 * 2 * 4)
+    expr = (Scalar(3) * Scalar(3) * alice_secret)
+    expected = (3 * 3 * 3)
     suite(parties, expr, expected)
-'''

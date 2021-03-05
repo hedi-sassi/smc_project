@@ -101,10 +101,8 @@ class SMCParty:
     def process_expression(
             self,
             expr: Expression,
-            mult=False
+            secret_in_mult = False
     ) -> Share:
-
-        print(repr(expr))
 
         if isinstance(expr, Addition):  # if expr is an addition operation:
             return self.process_expression(expr.e1) + self.process_expression(expr.e2)
@@ -113,9 +111,8 @@ class SMCParty:
             return self.process_expression(expr.e1) - self.process_expression(expr.e2)
 
         if isinstance(expr, Multiplication):
-            print(type(expr.e1), type(expr.e2))
+            if self.contains_secret(expr.e1) and self.contains_secret(expr.e2):
 
-            if isinstance(expr.e1, Secret) and isinstance(expr.e2, Secret):
                 x = self.process_expression(expr.e1, True)
                 y = self.process_expression(expr.e2, True)
 
@@ -125,34 +122,10 @@ class SMCParty:
                     return c + x * y_minus_b + y * x_minus_a - x_minus_a * y_minus_b
                 else:
                     return c + x * y_minus_b + y * x_minus_a
-
-            elif isinstance(expr.e2, Secret):
-
-                if self.contain_secret(expr.e1):
-                    x = self.process_expression(expr.e1, True)
-                    y = self.process_expression(expr.e2, True)
-
-                    x_minus_a, y_minus_b, c = self.get_beaver_shares(x, y, expr)
-
-                    if self.client_id == self.protocol_spec.participant_ids[0]:  # participant 0 add the constant
-                        return c + x * y_minus_b + y * x_minus_a - x_minus_a * y_minus_b
-                    else:
-                        return c + x * y_minus_b + y * x_minus_a
-
-                else:
-                    return self.process_expression(expr.e1) * self.process_expression(expr.e2)
-
-            elif isinstance(expr.e1, Scalar) and isinstance(expr.e1, Scalar):
-
-                if self.client_id == self.protocol_spec.participant_ids[
-                    0]:  # only the first participant operates on scalars
-                    return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True)
-
-                else:  # others participants need to perform neutral operation * 1 or + 0 depending if mult or add
-                    return Share(1) if mult else Share(0)
-
             else:
-                return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True)
+                secret_mult = self.contains_secret(expr.e1) or self.contains_secret(expr.e2) or secret_in_mult
+
+                return self.process_expression(expr.e1, secret_mult) * self.process_expression(expr.e2, secret_mult)
 
         if isinstance(expr, Secret):
             if str(expr.get_id_int()) in self.own_shares.keys():
@@ -160,15 +133,12 @@ class SMCParty:
             else:
                 return Share(self.search_share(expr.get_id_int()))
 
-        if isinstance(expr, Scalar):  # scalar should only be added by one participant in case of addition
-            if not mult and self.protocol_spec.participant_ids[0] != self.client_id:
+        if isinstance(expr, Scalar):
+            # scalar should only be added by one participant in case of addition
+            if (self.protocol_spec.participant_ids[0] != self.client_id) and (not secret_in_mult):
                 return Share(0)
             else:
                 return Share(expr.value)
-        #
-        # Call specialized methods for each expression type, and have these specialized
-        # methods in turn call `process_expression` on their sub-expressions to process
-        # further.
 
     def search_share(self, expr_id) -> int:
         """Search for corresponding secret on the server"""
@@ -182,16 +152,19 @@ class SMCParty:
                         return int(res)
 
     def get_beaver_shares(self, x, y, expr):
-        a, b, c = self.comm.retrieve_beaver_triplet_shares(str(expr.get_id_int()))
+
+        op_id_str = str(expr.get_id_int())
+
+        a, b, c = self.comm.retrieve_beaver_triplet_shares(op_id_str)
 
         # send to others shares of x-a and y-b
         x_minus_a_share = x - Share(a)
         y_minus_b_share = y - Share(b)
 
-        self.comm.publish_message(self.client_id + "x_minus_a", str(x_minus_a_share.value))
-        self.comm.publish_message(self.client_id + "y_minus_b", str(y_minus_b_share.value))
+        self.comm.publish_message(self.client_id + "x_minus_a_" + op_id_str, str(x_minus_a_share.value))
+        self.comm.publish_message(self.client_id + "y_minus_b_" + op_id_str, str(y_minus_b_share.value))
 
-        # reconstruct x -a and y-b
+        # reconstruct x-a and y-b
 
         x_shares = x_minus_a_share
         y_shares = y_minus_b_share
@@ -200,24 +173,24 @@ class SMCParty:
 
             if pid != self.client_id:
 
-                curr_x = self.comm.retrieve_public_message(pid, pid + "x_minus_a")
-                curr_y = self.comm.retrieve_public_message(pid, pid + "y_minus_b")
+                curr_x = self.comm.retrieve_public_message(pid, pid + "x_minus_a_" + op_id_str)
+                curr_y = self.comm.retrieve_public_message(pid, pid + "y_minus_b_" + op_id_str)
 
                 while curr_x is None:  # wait for others to upload their shares
-                    curr_x = self.comm.retrieve_public_message(pid, pid + "x_minus_a")
+                    curr_x = self.comm.retrieve_public_message(pid, pid + "x_minus_a_" + op_id_str)
 
                 while curr_y is None:
-                    curr_y = self.comm.retrieve_public_message(pid, pid + "y_minus_b")
+                    curr_y = self.comm.retrieve_public_message(pid, pid + "y_minus_b_" + op_id_str)
 
                 x_shares += Share(int(curr_x))
                 y_shares += Share(int(curr_y))
 
         return x_shares, y_shares, Share(c)
 
-    def contain_secret(self, expr):
+    def contains_secret(self, expr):
         if isinstance(expr, Secret):
             return True
         elif isinstance(expr, Scalar):
             return False
         else:
-            return self.contain_secret(expr.e1) or self.contain_secret(expr.e2)
+            return self.contains_secret(expr.e1) or self.contains_secret(expr.e2)

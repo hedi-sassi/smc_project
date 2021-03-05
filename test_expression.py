@@ -14,7 +14,6 @@ def test_expr_construction():
     b = Secret(2)
     c = Secret(3)
     expr = (a + b) * c * Scalar(4) + Scalar(3)
-    print(repr(expr))
     assert repr(expr) == "((Secret(1) + Secret(2)) * Secret(3) * Scalar(4) + Scalar(3))"
 
 
@@ -38,7 +37,6 @@ def test3():
     b = Secret(14)
     c = Secret(2)
     expr = ((a + b + c) * Scalar(5))
-    print(repr(expr))
     assert repr(expr) == "((Secret(3) + Secret(14) + Secret(2)) * Scalar(5))"
 
 
@@ -47,5 +45,4 @@ def test4():
     b = Secret(14)
     c = Secret(2)
     expr = ((a * b + b * Scalar(4)) * c - (a + Scalar(1) * b))
-    print(repr(expr))
     assert repr(expr) == "((Secret(3) * Secret(14) + Secret(14) * Scalar(4)) * Secret(2) - (Secret(3) + Scalar(1) * Secret(14)))"

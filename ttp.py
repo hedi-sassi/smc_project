@@ -56,7 +56,7 @@ class TrustedParamGenerator:
             return self.triplets_shares[op_id][client_id]
 
     def gen_beaver(self, op_id):
-        """Generates a new dictionnary containing all beaver triplets for each client for a specific operation
+        """Generates a new dictionary containing all beaver triplets for each client for a specific operation
         indexed by op_id """
 
         a = random.randint(0, get_mod())
