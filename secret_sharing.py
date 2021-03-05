@@ -2,7 +2,7 @@
 Secret sharing scheme.
 """
 import random
-import sys 
+import sys
 from typing import List
 
 
@@ -12,10 +12,9 @@ class Share:
     """
 
     def __init__(
-        self,
-        value: int = 0
-        ):
-
+            self,
+            value: int = 0
+    ):
         self.value = value
 
     def __repr__(self):
@@ -36,11 +35,10 @@ class Share:
 
 def share_secret(secret: int, num_shares: int) -> List[Share]:
     """Generate secret shares."""
-    
+
     shares = []
     last_share_value = secret
-    for _ in range(num_shares -1):
-
+    for _ in range(num_shares - 1):
         share_value = random.randint(0, get_mod())
 
         shares.append(Share(share_value))
@@ -50,14 +48,13 @@ def share_secret(secret: int, num_shares: int) -> List[Share]:
 
     return shares
 
-    
 
 def reconstruct_secret(shares: List[Share]) -> int:
     """Reconstruct the secret from shares."""
-    
+
     res = 0
 
-    for share in shares :
+    for share in shares:
         res = add_mod(share.value, res)
 
     return res
@@ -68,19 +65,23 @@ def add_mod(a, b) -> int:
 
     return (a + b) % get_mod()
 
+
 def sub_mod(a, b) -> int:
     """Sub modulo 2^64"""
 
     return (a - b) % get_mod()
+
 
 def mul_mod(a, b) -> int:
     """Mul modulo 2^64"""
 
     return (a * b) % get_mod()
 
+
 # size of the additive integer field
-#max_nbr = 2**64
+# max_nbr = 2**64
 max_nbr = 1000
+
 
 def get_mod() -> int:
     """Return the moddulus for the integer Field 2^64"""

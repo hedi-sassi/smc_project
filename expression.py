@@ -24,26 +24,39 @@ def gen_id() -> bytes:
 
 
 def operation_formatting(op, depth: int = 0) -> str:
-    f1 = f"{repr(op.e1)}" if isinstance(op.e1, (Scalar, Secret)) else f"{operation_formatting(op.e1, depth + 1)}"
-    f2 = f"{repr(op.e2)}" if isinstance(op.e2, (Scalar, Secret)) else f"{operation_formatting(op.e2, depth + 1)}"
 
-    if (not isinstance(op.e1, (Scalar, Secret)) or not isinstance(op.e2, (Scalar, Secret))) and (
-            op.e1.grouped and op.e2.grouped):
-        op.grouped = True
+    res = ""
+
+    if not isinstance(op, (Scalar, Secret)):
+        print(type(op.e1), op.op, type(op.e2))
+
+        if isinstance(op, Multiplication):
+            if isinstance(op.e1, (Scalar, Secret, Multiplication)) and isinstance(op.e2, (Scalar, Secret, Multiplication)):
+                res = f"{operation_formatting(op.e1, depth+1)}{op.op}{operation_formatting(op.e2, depth+1)}"
+
+            elif isinstance(op.e1, (Scalar, Secret)) and not isinstance(op.e2, (Scalar, Secret, Multiplication)):
+                res = f"{operation_formatting(op.e1, depth + 1)}{op.op}({operation_formatting(op.e2, depth + 1)})"
+
+            elif not isinstance(op.e1, (Scalar, Secret, Multiplication)) and isinstance(op.e2, (Scalar, Secret)):
+                res = f"({operation_formatting(op.e1, depth + 1)}){op.op}{operation_formatting(op.e2, depth + 1)}"
+
+            else:
+                res = f"({operation_formatting(op.e1, depth + 1)}){op.op}({operation_formatting(op.e2, depth + 1)})"
+
+        elif isinstance(op, Substraction):
+            if not isinstance(op.e2, (Scalar, Secret)):
+                res = f"{operation_formatting(op.e1, depth + 1)}{op.op}({operation_formatting(op.e2, depth + 1)})"
+
+            else:
+                res = f"{operation_formatting(op.e1, depth + 1)}{op.op}{operation_formatting(op.e2, depth + 1)}"
+
+        else:
+            res = f"{operation_formatting(op.e1, depth + 1)}{op.op}{operation_formatting(op.e2, depth + 1)}"
+
     else:
+        res = f"{repr(op)}"
 
-        if not isinstance(op.e1, (Scalar, Secret)) and not op.e1.grouped:
-            op.grouped = True
-            f1 = f"({f1})"
-
-        if not isinstance(op.e2, (Scalar, Secret)) and not op.e2.grouped:
-            op.grouped = True
-            f2 = f"({f2})"
-
-    if depth == 0:
-        return f"({f1}{op.op}{f2})"
-
-    return f"{f1}{op.op}{f2}"
+    return res if depth != 0 else f"({res})"
 
 
 class Expression:
@@ -84,7 +97,6 @@ class Scalar(Expression):
             value: int,
             id: Optional[bytes] = None
     ):
-        self.grouped = True
         self.value = value
         super().__init__(id)
 
@@ -105,7 +117,6 @@ class Secret(Expression):
             value: Optional[int] = None,
             id: Optional[bytes] = None
     ):
-        self.grouped = True
         self.value = value
         super().__init__(id)
 
@@ -113,7 +124,6 @@ class Secret(Expression):
         return (
             f"{self.__class__.__name__}({self.value if self.value is not None else ''})"
         )
-
 
     # Feel free to add as many methods as you like.
 
@@ -128,7 +138,6 @@ class Addition(Expression):
             id: Optional[bytes] = None):
         self.e1 = e1
         self.e2 = e2
-        self.grouped = False
         self.op = " + "
         super().__init__(id)
 
@@ -148,7 +157,6 @@ class Substraction(Expression):
             id: Optional[bytes] = None):
         self.e1 = e1
         self.e2 = e2
-        self.grouped = False
         self.op = " - "
         super().__init__(id)
 
@@ -168,7 +176,6 @@ class Multiplication(Expression):
             id: Optional[bytes] = None):
         self.e1 = e1
         self.e2 = e2
-        self.grouped = False
         self.op = " * "
         super().__init__(id)
 

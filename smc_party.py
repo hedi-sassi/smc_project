@@ -93,18 +93,18 @@ class SMCParty:
                 while remote_share is None:  # retry if not yet here
 
                     remote_share = self.comm.retrieve_public_message(pid, "final")
-                # print("#######################################"+str(int(remote_share)))
                 final_result += Share(int(remote_share))
 
-        # print("#######################################"+str(final_result))
         return final_result.value
 
     # Suggestion: To process expressions, make use of the *visitor pattern* like so:
     def process_expression(
             self,
             expr: Expression,
-            mult = False
+            mult=False
     ) -> Share:
+
+        print(repr(expr))
 
         if isinstance(expr, Addition):  # if expr is an addition operation:
             return self.process_expression(expr.e1) + self.process_expression(expr.e2)
@@ -144,7 +144,8 @@ class SMCParty:
 
             elif isinstance(expr.e1, Scalar) and isinstance(expr.e1, Scalar):
 
-                if self.client_id == self.protocol_spec.participant_ids[0]:  # only the first participant operates on scalars
+                if self.client_id == self.protocol_spec.participant_ids[
+                    0]:  # only the first participant operates on scalars
                     return self.process_expression(expr.e1, True) * self.process_expression(expr.e2, True)
 
                 else:  # others participants need to perform neutral operation * 1 or + 0 depending if mult or add
@@ -212,7 +213,6 @@ class SMCParty:
                 y_shares += Share(int(curr_y))
 
         return x_shares, y_shares, Share(c)
-
 
     def contain_secret(self, expr):
         if isinstance(expr, Secret):

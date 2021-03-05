@@ -74,7 +74,7 @@ class Communication:
         """
 
         url = f"{self.base_url}/public/{self.client_id}/{label}"
-        print(f"POST {url}")
+        #print(f"POST {url}")
         requests.post(url, message)
 
     def retrieve_public_message(
@@ -91,7 +91,7 @@ class Communication:
         # We can either use a websocket, or do some polling, but websockets would require asyncio.
         # So we are doing polling to avoid introducing a new programming paradigm.
         while True:
-            print(f"GET  {url}")
+            #print(f"GET  {url}")
             res = requests.get(url)
             if res.status_code == 200:
                 return res.content
@@ -110,5 +110,4 @@ class Communication:
         url = f"{self.base_url}/shares/{self.client_id}/{op_id}"
 
         res = requests.get(url)
-        print("#####", res)
         return tuple(json.loads(res.text))
