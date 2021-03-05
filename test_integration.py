@@ -126,7 +126,6 @@ def test_suite3():
     }
 
     expr = ((alice_secret + bob_secret + charlie_secret) * Scalar(5))
-    print("##################################",repr(expr))
     expected = (3 + 14 + 2) * 5
     suite(parties, expr, expected)
 
@@ -272,4 +271,55 @@ def test_suite_two_parties():
 
     expr = (alice_secret + bob_secret)
     expected = 3 + 14
+    suite(parties, expr, expected)
+
+
+def test_suite_three_parties():
+    """
+    f(a, b) = a * b * c
+    """
+    alice_secret = Secret()
+    bob_secret = Secret()
+    charlie_secret = Secret()
+
+    parties = {
+        "Alice": {alice_secret: 3},
+        "Bob": {bob_secret: 2},
+        "Charlie": {charlie_secret: 1}
+    }
+
+    expr = (alice_secret * bob_secret * charlie_secret)
+    expected = (3 * 2 * 1)
+    suite(parties, expr, expected)
+
+
+def test_suite_const_mul_secret():
+    """
+        f(a, b) = a * K
+    """
+    alice_secret = Secret()
+
+    parties = {
+        "Alice": {alice_secret: 3},
+    }
+
+    expr = (alice_secret * Scalar(2))
+    expected = (3 * 2)
+    suite(parties, expr, expected)
+
+
+def test_suite_const_mul_secret2():
+    """
+        f(a, b) = a * K * b
+    """
+    alice_secret = Secret()
+    bob_secret = Secret()
+
+    parties = {
+        "Alice": {alice_secret: 3},
+        "Bob": {bob_secret: 4},
+    }
+
+    expr = (alice_secret * Scalar(2) * bob_secret)
+    expected = (3 * 2 * 4)
     suite(parties, expr, expected)

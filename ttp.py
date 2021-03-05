@@ -43,12 +43,12 @@ class TrustedParamGenerator:
         """
         Retrieve a triplet of shares for a given client_id. And operation id.
         """
-        print("################################3Beaver dict : "+str(self.triplets_shares))
         if client_id not in self.participant_ids:
             return None
 
+        print("CHECKKKKKKKKK",op_id, self.triplets_shares.keys(), op_id in self.triplets_shares.keys())
         # first check if dict not already generated
-        if op_id in self.triplets_shares:
+        if op_id in self.triplets_shares.keys():
             return self.triplets_shares[op_id][client_id]
 
         else:
@@ -70,7 +70,7 @@ class TrustedParamGenerator:
         b_shares = share_secret(b, len(self.participant_ids))
         c_shares = share_secret(c, len(self.participant_ids))
 
-        print(a_shares)
+        print("#######################################################################")
 
         # store shares in a dict
         res = dict()

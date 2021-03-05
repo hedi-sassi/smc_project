@@ -32,10 +32,10 @@ def test2():
     assert repr(expr) == "(Secret(14) - Secret(3))"
 
 
-def test3():
+'''def test3():
     a = Secret(3)
     b = Secret(14)
     c = Secret(2)
     expr = ((a + b + c) + Scalar(5))
     print(repr(expr))
-    assert repr(expr) == "((Secret(3) + Secret(14) + Secret(2)) + Scalar(5))"
+    assert repr(expr) == "((Secret(3) + Secret(14) + Secret(2)) + Scalar(5))"'''

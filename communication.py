@@ -110,4 +110,5 @@ class Communication:
         url = f"{self.base_url}/shares/{self.client_id}/{op_id}"
 
         res = requests.get(url)
+        print("#####", res)
         return tuple(json.loads(res.text))
