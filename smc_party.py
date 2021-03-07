@@ -76,6 +76,7 @@ class SMCParty:
                     # Keep own share in dict
                     self.own_shares[str(s.get_id_int())] = shares[i]
 
+
         # compute locally share of the final value
         final_share = self.process_expression(self.protocol_spec.expr).value
 
