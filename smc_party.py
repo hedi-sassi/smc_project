@@ -101,7 +101,7 @@ class SMCParty:
     def process_expression(
             self,
             expr: Expression,
-            secret_in_mult = False
+            secret_in_mult=False
     ) -> Share:
 
         if isinstance(expr, Addition):  # if expr is an addition operation:

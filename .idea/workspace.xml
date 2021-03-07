@@ -3,14 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f78d0582-86bc-472b-8195-90c070aa9d36" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/communication.py" beforeDir="false" afterPath="$PROJECT_DIR$/communication.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/expression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secret_sharing.py" beforeDir="false" afterPath="$PROJECT_DIR$/secret_sharing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/smc_party.py" beforeDir="false" afterPath="$PROJECT_DIR$/smc_party.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_expression.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_expression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ttp.py" beforeDir="false" afterPath="$PROJECT_DIR$/ttp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +39,7 @@
       <option name="presentableId" value="Default" />
       <updated>1614881802821</updated>
       <workItem from="1614881808388" duration="15052000" />
-      <workItem from="1614944609606" duration="13920000" />
+      <workItem from="1614944609606" duration="14392000" />
     </task>
     <servers />
   </component>
