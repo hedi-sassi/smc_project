@@ -3,10 +3,9 @@ Implementation of an SMC client.
 
 MODIFY THIS FILE.
 """
-# You might want to import more classes if needed.
 
-import collections
-import json
+import time
+import sys
 from typing import (
     Dict,
     Set,
@@ -23,9 +22,9 @@ from secret_sharing import (
     Share,
 )
 
+sys.setrecursionlimit(1500)
 
 # Feel free to add as many imports as you want.
-
 
 class SMCParty:
     """
@@ -48,6 +47,7 @@ class SMCParty:
             protocol_spec: ProtocolSpec,
             value_dict: Dict[Secret, int]
     ):
+
         self.comm = Communication(server_host, server_port, client_id)
 
         self.client_id = client_id
@@ -62,8 +62,10 @@ class SMCParty:
         """
         The method the client use to do the SMC.
         """
-        # Share secrets across participants
 
+        start = time.time() * 1000
+
+        # Share secrets across participants
         for s in self.secrets:
             shares = share_secret(self.value_dict[s], len(self.protocol_spec.participant_ids))
 
@@ -75,7 +77,6 @@ class SMCParty:
                 else:
                     # Keep own share in dict
                     self.own_shares[str(s.get_id_int())] = shares[i]
-
 
         # compute locally share of the final value
         final_share = self.process_expression(self.protocol_spec.expr).value
@@ -95,6 +96,23 @@ class SMCParty:
 
                     remote_share = self.comm.retrieve_public_message(pid, "final")
                 final_result += Share(int(remote_share))
+
+        stop = time.time() * 1000
+
+        total_time = stop - start
+        computation_time = total_time - self.comm.network_delays
+
+        total_bytes_sent = self.comm.bytes_sent
+        total_bytes_received = self.comm.bytes_received
+
+        # TODO: counted only bytes of the message, should count the bytes of the whole packet?
+
+        # TODO: write metrics in a file
+        if self.client_id == self.protocol_spec.participant_ids[0]:
+            res_file = open("metrics/"+self.client_id + "_metrics.txt", "a")
+            res_file.write(str(total_time) + "," + str(computation_time) + "," + str(total_bytes_sent) + "," + str(
+                total_bytes_received)+"\n")
+            res_file.close()
 
         return final_result.value
 

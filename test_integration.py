@@ -323,6 +323,7 @@ def test_suite_const_mul_secret2():
     expected = (3 * 3 * 3)
     suite(parties, expr, expected)
 
+
 def test_suite_three_parties_double_secret():
     """
     f(a, b) = a1 + b1 + b2 + a2 + c
@@ -334,7 +335,7 @@ def test_suite_three_parties_double_secret():
     charlie_secret = Secret()
 
     parties = {
-        "Alice": {alice_secret1: 3,alice_secret2: 4},
+        "Alice": {alice_secret1: 3, alice_secret2: 4},
         "Bob": {bob_secret1: 2, bob_secret2: 12},
         "Charlie": {charlie_secret: 1}
     }
@@ -342,6 +343,7 @@ def test_suite_three_parties_double_secret():
     expr = (alice_secret1 + bob_secret1 + bob_secret2 + alice_secret2 + charlie_secret)
     expected = (3 + 4 + 12 + 2 + 1)
     suite(parties, expr, expected)
+
 
 def test_suite_three_parties_double_secret_mult():
     """
@@ -354,7 +356,7 @@ def test_suite_three_parties_double_secret_mult():
     charlie_secret = Secret()
 
     parties = {
-        "Alice": {alice_secret1: 3,alice_secret2: 4},
+        "Alice": {alice_secret1: 3, alice_secret2: 4},
         "Bob": {bob_secret1: 2, bob_secret2: 12},
         "Charlie": {charlie_secret: 1}
     }
@@ -362,6 +364,7 @@ def test_suite_three_parties_double_secret_mult():
     expr = (alice_secret1 * alice_secret2 + bob_secret1 * bob_secret2 + charlie_secret)
     expected = (3 * 4 + 2 * 12 + 1)
     suite(parties, expr, expected)
+
 
 def test_suite_three_parties_double_secret_double_use():
     """
@@ -374,7 +377,7 @@ def test_suite_three_parties_double_secret_double_use():
     charlie_secret = Secret()
 
     parties = {
-        "Alice": {alice_secret1: 3,alice_secret2: 4},
+        "Alice": {alice_secret1: 3, alice_secret2: 4},
         "Bob": {bob_secret1: 2, bob_secret2: 12},
         "Charlie": {charlie_secret: 1}
     }

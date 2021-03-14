@@ -34,6 +34,11 @@ class Communication:
         self.client_id = client_id
         self.poll_delay = poll_delay
 
+        # Record metrics
+        self.bytes_received = 0
+        self.bytes_sent = 0
+        self.network_delays = 0
+
     def send_private_message(
             self,
             receiver_id: str,
@@ -43,9 +48,12 @@ class Communication:
         """
         Send a private message to the server.
         """
-
+        start = time.time() * 1000
         url = f"{self.base_url}/private/{self.client_id}/{receiver_id}/{label}"
         requests.post(url, message)
+        stop = time.time() * 1000
+        self.network_delays += stop - start
+        self.bytes_sent += len(message)
 
     def retrieve_private_message(
             self,
@@ -58,9 +66,15 @@ class Communication:
         url = f"{self.base_url}/private/{self.client_id}/{label}"
         # We can either use a websocket, or do some polling, but websockets would require asyncio.
         # So we are doing polling to avoid introducing a new programming paradigm.
+        start = time.time() * 1000
         while True:
             res = requests.get(url)
             if res.status_code == 200:
+
+                stop = time.time() * 1000
+                self.network_delays += stop - start
+                self.bytes_received += len(res.content)
+
                 return res.content
             time.sleep(self.poll_delay)
 
@@ -75,7 +89,14 @@ class Communication:
 
         url = f"{self.base_url}/public/{self.client_id}/{label}"
         print(f"POST {url}")
+
+        start = time.time() * 1000
+
         requests.post(url, message)
+
+        stop = time.time() * 1000
+        self.network_delays += stop - start
+        self.bytes_sent += len(message)
 
     def retrieve_public_message(
             self,
@@ -90,12 +111,25 @@ class Communication:
 
         # We can either use a websocket, or do some polling, but websockets would require asyncio.
         # So we are doing polling to avoid introducing a new programming paradigm.
+
+        start = time.time() * 1000
+
         while True:
             print(f"GET  {url}")
             res = requests.get(url)
             if res.status_code == 200:
+
+                stop = time.time() * 1000
+                self.network_delays += stop - start
+                self.bytes_received += len(res.content)
+
                 return res.content
             if res.status_code == 404:
+
+                stop = time.time() * 1000
+                self.network_delays += stop - start
+                self.bytes_received += len(res.content)
+
                 return None
             time.sleep(self.poll_delay)
 
@@ -109,5 +143,12 @@ class Communication:
 
         url = f"{self.base_url}/shares/{self.client_id}/{op_id}"
 
+        start = time.time() * 1000
+
         res = requests.get(url)
+
+        stop = time.time() * 1000
+        self.network_delays += stop - start
+        self.bytes_received += len(res.content)
+
         return tuple(json.loads(res.text))
