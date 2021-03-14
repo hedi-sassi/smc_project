@@ -9,7 +9,6 @@ from server import run
 
 from smc_party import SMCParty
 
-MODULUS = 2 ** 64
 
 def smc_client(client_id, prot, value_dict, queue):
     cli = SMCParty(
@@ -86,7 +85,7 @@ def fixed_circuit_more_participants():
             for p in range(num_part):
 
                 party_secret = Secret()
-                parties[str(p)] = {party_secret: p+69420}
+                parties[str(p)] = {party_secret: p + 69420}
 
                 if p == 0:
                     circuit += party_secret
@@ -98,7 +97,6 @@ def fixed_circuit_more_participants():
 
 
 def add_scalar():
-
     for _ in range(repeat_experiment):
         for num_ops in ops_n:
 
@@ -124,7 +122,6 @@ def add_scalar():
 
 
 def add_secret():
-
     for _ in range(repeat_experiment):
         for num_ops in ops_n:
 
@@ -132,21 +129,25 @@ def add_secret():
             parties = {}
             total = 0
 
-            for o in range(num_ops):
-
+            # Generate parties and basic circuit
+            for p in range(10):
                 party_secret = Secret()
                 val = random.randint(0, get_mod())
+                parties[str(p)] = {party_secret: val}
 
-                parties[str(o)] = {party_secret: val}
-                circuit += party_secret
+            for o in range(num_ops):
 
-                total = (total + val) % get_mod()
+                if o == 0:
+                    circuit = list(parties[str(o % 10)].keys())[0]
+                else:
+                    circuit += list(parties[str(o % 10)].keys())[0]
+
+                total = (total + list(parties[str(o % 10)].values())[0]) % get_mod()
 
             suite(parties, circuit, total)
 
 
 def mul_scalar():
-
     for _ in range(repeat_experiment):
         for num_ops in ops_n:
 
@@ -172,29 +173,33 @@ def mul_scalar():
 
 
 def mul_secret():
-
     for _ in range(repeat_experiment):
         for num_ops in ops_n:
 
-            circuit = Scalar(1)
+            circuit = Scalar(0)
             parties = {}
             total = 1
 
-            for o in range(num_ops):
-
+            # Generate parties and basic circuit
+            for p in range(10):
                 party_secret = Secret()
                 val = random.randint(0, get_mod())
+                parties[str(p)] = {party_secret: val}
 
-                parties[str(o)] = {party_secret: val}
-                circuit *= party_secret
+            for o in range(num_ops):
 
-                total = (total * val) % get_mod()
+                if o == 0:
+                    circuit = list(parties[str(o % 10)].keys())[0]
+                else:
+                    circuit *= list(parties[str(o % 10)].keys())[0]
+
+                total = (total * list(parties[str(o % 10)].values())[0]) % get_mod()
 
             suite(parties, circuit, total)
 
 
-#fixed_circuit_more_participants()
-#add_scalar()
-#add_secret()
-#mul_scalar()
+# fixed_circuit_more_participants()
+# add_scalar()
+# add_secret()
+# mul_scalar()
 mul_secret()
