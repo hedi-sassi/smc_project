@@ -8,7 +8,7 @@ from secret_sharing import get_mod
 from server import run
 
 from smc_party import SMCParty
-
+import os
 
 def smc_client(client_id, prot, value_dict, queue):
     cli = SMCParty(
@@ -197,6 +197,8 @@ def mul_secret():
 
             suite(parties, circuit, total)
 
+
+os.mkdir("metrics")
 
 # fixed_circuit_more_participants()
 # add_scalar()
