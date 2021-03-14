@@ -385,3 +385,33 @@ def test_suite_three_parties_double_secret_double_use():
     expr = (alice_secret1 * alice_secret2 + bob_secret1 * bob_secret2 + charlie_secret * alice_secret2 * bob_secret2)
     expected = (3 * 4 + 2 * 12 + 1 * 4 * 12)
     suite(parties, expr, expected)
+
+def test_weight_update():
+
+    """
+    Computes a batch weight update for a perceptron with batch size = 3
+    f(a, b, c) = 3 * W_t + lr * ( (a1 - a2) * a3 + (b1 - b2) * b3 + (c1 - c2) * c3 
+    """
+
+    weight = 8
+    lr = 1
+
+    alice_secret1 = Secret()
+    alice_secret2 = Secret()
+    alice_secret3 = Secret()
+    bob_secret1 = Secret()
+    bob_secret2 = Secret()
+    bob_secret3 = Secret()
+    charlie_secret1 = Secret()
+    charlie_secret2 = Secret()
+    charlie_secret3 = Secret()
+
+    parties = {
+        "Alice": {alice_secret1: 3, alice_secret2: 4, alice_secret3: 5},
+        "Bob": {bob_secret1: 20, bob_secret2: 12,  bob_secret3: 3},
+        "Charlie": {charlie_secret1: 9, charlie_secret2: 7, charlie_secret3: 6}
+    }
+
+    expr = (Scalar(3) * Scalar(weight) + Scalar(lr) * ((alice_secret1 - alice_secret2) * alice_secret3 + (bob_secret1 - bob_secret2) * bob_secret3) + (charlie_secret1 - charlie_secret2) * charlie_secret3 )
+    expected = (3 * 8 + 1 * ( (3 - 4) * 5) +  (20 - 12) * 3 + (9 - 7) * 6)
+    suite(parties, expr, expected)
