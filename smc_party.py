@@ -109,7 +109,7 @@ class SMCParty:
 
         # TODO: write metrics in a file
         if self.client_id == self.protocol_spec.participant_ids[0]:
-            res_file = open("metrics/"+self.client_id + "_metrics.txt", "a")
+            res_file = open("metrics/mul_secret/"+self.client_id + "_metrics.txt", "a")
             res_file.write(str(total_time) + "," + str(computation_time) + "," + str(total_bytes_sent) + "," + str(
                 total_bytes_received)+"\n")
             res_file.close()

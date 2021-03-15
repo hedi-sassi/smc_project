@@ -69,7 +69,7 @@ def suite(parties, expr, expected):
 
 participants_n = [2, 5, 10, 20, 50, 100]
 ops_n = [10, 100, 500, 1000]
-repeat_experiment = 100
+repeat_experiment = 20
 
 
 def fixed_circuit_more_participants():
@@ -198,7 +198,23 @@ def mul_secret():
             suite(parties, circuit, total)
 
 
-os.mkdir("metrics")
+if not os.path.exists("metrics"):
+    os.mkdir("metrics")
+
+if not os.path.exists("metrics/fixed_circuit_more_participants"):
+    os.mkdir("metrics/fixed_circuit_more_participants")
+
+if not os.path.exists("metrics/add_scalar"):
+    os.mkdir("metrics/add_scalar")
+
+if not os.path.exists("metrics/add_secret"):
+    os.mkdir("metrics/add_secret")
+
+if not os.path.exists("metrics/mul_scalar"):
+    os.mkdir("metrics/mul_scalar")
+
+if not os.path.exists("metrics/mul_secret"):
+    os.mkdir("metrics/mul_secret")
 
 # fixed_circuit_more_participants()
 # add_scalar()
