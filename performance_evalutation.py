@@ -223,7 +223,7 @@ if not os.path.exists("metrics/mul_secret"):
     os.mkdir("metrics/mul_secret")
 
 # fixed_circuit_more_participants()
-add_scalar()
+# add_scalar()
 # add_secret()
-# mul_scalar()
+mul_scalar()
 # mul_secret()
