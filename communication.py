@@ -124,13 +124,7 @@ class Communication:
                 self.bytes_received += len(res.content)
 
                 return res.content
-            if res.status_code == 404:
-
-                stop = time.time() * 1000
-                self.network_delays += stop - start
-                self.bytes_received += len(res.content)
-
-                return None
+            
             time.sleep(self.poll_delay)
 
     def retrieve_beaver_triplet_shares(

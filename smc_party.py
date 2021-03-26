@@ -73,7 +73,7 @@ class SMCParty:
 
                 if pid != self.client_id:
                     # Publish shares for other participants
-                    self.comm.publish_message(pid + "_" + str(s.get_id_int()), str(shares[i].value))
+                    self.comm.send_private_message(pid, str(s.get_id_int()), str(shares[i].value))
                 else:
                     # Keep own share in dict
                     self.own_shares[str(s.get_id_int())] = shares[i]
@@ -161,14 +161,8 @@ class SMCParty:
 
     def search_share(self, expr_id) -> int:
         """Search for corresponding secret on the server"""
-
-        # I know its beautiful
-        while True:
-            for name in self.protocol_spec.participant_ids:
-                if name != self.client_id:
-                    res = self.comm.retrieve_public_message(name, self.client_id + "_" + str(expr_id))
-                    if res is not None:
-                        return int(res)
+        return int(self.comm.retrieve_private_message(str(expr_id)))
+      
 
     def get_beaver_shares(self, x, y, expr):
 
