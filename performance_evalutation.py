@@ -69,7 +69,7 @@ def suite(parties, expr, expected):
 
 participants_n = [2, 5, 10, 20, 50, 100]
 ops_n = [10, 100, 500, 1000]
-repeat_experiment = 100
+repeat_experiment = 20
 
 
 def fixed_circuit_more_participants():
@@ -104,8 +104,11 @@ def add_scalar():
             parties = {}
             total = 0
 
-            party_secret = Secret()
-            parties["0"] = {party_secret: 69420}
+            # Generate parties
+            for p in range(10):
+                party_secret = Secret()
+                val = random.randint(0, get_mod())
+                parties[str(p)] = {party_secret: val}
 
             for o in range(num_ops):
 
@@ -129,7 +132,7 @@ def add_secret():
             parties = {}
             total = 0
 
-            # Generate parties and basic circuit
+            # Generate parties
             for p in range(10):
                 party_secret = Secret()
                 val = random.randint(0, get_mod())
@@ -155,8 +158,11 @@ def mul_scalar():
             parties = {}
             total = 1
 
-            party_secret = Secret()
-            parties["0"] = {party_secret: 69420}
+            # Generate parties
+            for p in range(10):
+                party_secret = Secret()
+                val = random.randint(0, get_mod())
+                parties[str(p)] = {party_secret: val}
 
             for o in range(num_ops):
 
@@ -198,10 +204,26 @@ def mul_secret():
             suite(parties, circuit, total)
 
 
-os.mkdir("metrics")
+if not os.path.exists("metrics"):
+    os.mkdir("metrics")
+
+if not os.path.exists("metrics/fixed_circuit_more_participants"):
+    os.mkdir("metrics/fixed_circuit_more_participants")
+
+if not os.path.exists("metrics/add_scalar"):
+    os.mkdir("metrics/add_scalar")
+
+if not os.path.exists("metrics/add_secret"):
+    os.mkdir("metrics/add_secret")
+
+if not os.path.exists("metrics/mul_scalar"):
+    os.mkdir("metrics/mul_scalar")
+
+if not os.path.exists("metrics/mul_secret"):
+    os.mkdir("metrics/mul_secret")
 
 # fixed_circuit_more_participants()
 # add_scalar()
 # add_secret()
-# mul_scalar()
-mul_secret()
+mul_scalar()
+# mul_secret()
